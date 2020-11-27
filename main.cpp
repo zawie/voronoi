@@ -1,8 +1,10 @@
 #include <iostream>
+#include <math.h>
 
 const int N = 512;
 const int P = 100;
 
+//General Helpers
 /**
  * Takes a double array and converts it to a .bmp image
  *
@@ -39,6 +41,15 @@ void save(char* file_name, double M[N][N]) {
         {
             U8 indis = (U8)((int)(M[i][j]*255));
             fwrite(tablo_color+indis,4,1,f);
+
+//            int r = (int) (sin(M[i][j]*M_PI+M_PI/3)*255);
+//            int g = (int) (sin(M[i][j]*M_PI)*255);
+//            int b =  (int) (sin(M[i][j]*M_PI-M_PI/3)*255);
+//            if (r < 0) r = 0;
+//            if (g < 0) g = 0;
+//            if (b < 0) b = 0;
+//            const U8 c[4] = { (U8)r,(U8)g,(U8)b,(U8)255 };
+//            fwrite(c,4,1,f);
         }
     }
 
@@ -80,13 +91,14 @@ void clear(double M[N][N]) {
 }
 
 
+//Voronoi Diagrams
 /**
  * Adds a voroni diagram to the passed matrix
  *
  * @param M
  * @param featurePointCount
  */
-void voroniDiagram(double M[N][N], int points[P][2], double c0, double c1) {
+void voronoiDiagram(double M[N][N], int points[P][2], double c0, double c1) {
     //Color the matrix
     double max = 1;
     double min = 0;
@@ -127,47 +139,35 @@ void createPoints(int points[P][2]){
     }
 }
 
+//Main Function
 int k = 0;
 void createFrame(double M[N][N], int points[P][2], double c0, double c1){
     std::cout << "k:" << k << std::endl;
     clear(M);
-    voroniDiagram(M,points,c0,c1);
+    voronoiDiagram(M,points,c0,c1);
     char buf[12];
     snprintf(buf, 12, "%d.bmp", k); // puts string into buffer
-    voroniDiagram(M,points,c0,c1);
+    voronoiDiagram(M,points,c0,c1);
     save(buf,M);
     k++;
 }
 
+
 int main() {
     //Create matrix
     double M[N][N];
-    clear(M);
     //Create points
     int points[P][2];
     createPoints(points);
+    //Create Voronoi Diagram
+    voronoiDiagram(M,points,-1,1);
+    save("colorTest.bmp",M);
     //Set seed
     srand(time(0));
-    double step = 0.1;
-    //top
-    double c0 = -1;
-    for (double c1 = -1; c1 <= 1; c1+=step){
-        createFrame(M,points,c0,c1);
-    }
-    //right
-    double c1=1;
-    for (double c0 = -1; c0 <= 1; c0+=step){
-        createFrame(M,points,c0,c1);
-    }
-    //bottom
-    c0 = 1;
-    for (double c1 = 1; c1 >= -1; c1-=step){
-        createFrame(M,points,c0,c1);
-    }
-    //left
-    c1= -1;
-    for (double c0 = 1; c0 >= -1; c0-=step){
-        createFrame(M,points,c0,c1);
+    for (float t=0; t < 1; t+=0.01){
+        float theta = t*2*M_PI;
+        std::cout << "theta:" << theta << std::endl;
+        createFrame(M,points,sin(theta),cos(theta));
     }
     return 0;
 }
