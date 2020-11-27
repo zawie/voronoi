@@ -1,7 +1,7 @@
 #include <iostream>
 #include <math.h>
 
-const int N = 512;
+const int N = 1024;
 const int P = 100;
 
 //General Helpers
@@ -11,7 +11,7 @@ const int P = 100;
  * @param file_name the file name to save to
  * @param M an NxN matrix so save
  */
-void save(char* file_name, double M[N][N]) {
+void save(char* file_name, int M[N][N]) {
     typedef unsigned char U8;
     typedef struct { U8 p[4]; } color;
 
@@ -39,7 +39,7 @@ void save(char* file_name, double M[N][N]) {
     {
         for (int j = 0; j < width; j++)
         {
-            U8 indis = (U8)((int)(M[i][j]*255));
+            U8 indis = (U8)((int)(M[i][j]));
             fwrite(tablo_color+indis,4,1,f);
 
 //            int r = (int) (sin(M[i][j]*M_PI+M_PI/3)*255);
@@ -61,7 +61,7 @@ void save(char* file_name, double M[N][N]) {
  *
  * @param M an NxN array
  */
-void print(double M[N][N]) {
+void print(int M[N][N]) {
     for (int i = 0; i < N; i++) {
         if (i == 0){
             std::cout << "[";
@@ -82,7 +82,7 @@ void print(double M[N][N]) {
  *
  * @param M an NxN array
  */
-void clear(double M[N][N]) {
+void clear(int M[N][N]) {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             M[i][j] = 0.0;
@@ -98,7 +98,7 @@ void clear(double M[N][N]) {
  * @param M
  * @param featurePointCount
  */
-void voronoiDiagram(double M[N][N], int points[P][2], double c0, double c1) {
+void voronoiDiagram(int M[N][N], int points[P][2], double c0, double c1) {
     //Color the matrix
     double max = 1;
     double min = 0;
@@ -127,7 +127,7 @@ void voronoiDiagram(double M[N][N], int points[P][2], double c0, double c1) {
     //Scale to double between 0 and 1
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            M[i][j] = (M[i][j]-min)/(max-min);
+            M[i][j] = 255*(M[i][j]-min)/(max-min);
         }
     }
 }
@@ -139,35 +139,25 @@ void createPoints(int points[P][2]){
     }
 }
 
-//Main Function
-int k = 0;
-void createFrame(double M[N][N], int points[P][2], double c0, double c1){
-    std::cout << "k:" << k << std::endl;
-    clear(M);
-    voronoiDiagram(M,points,c0,c1);
-    char buf[12];
-    snprintf(buf, 12, "%d.bmp", k); // puts string into buffer
-    voronoiDiagram(M,points,c0,c1);
-    save(buf,M);
-    k++;
-}
-
-
 int main() {
+    //Set seed
+    srand(time(0));
     //Create matrix
-    double M[N][N];
+    int M[N][N];
+    clear(M);
     //Create points
     int points[P][2];
     createPoints(points);
     //Create Voronoi Diagram
-    voronoiDiagram(M,points,-1,1);
-    save("colorTest.bmp",M);
-    //Set seed
-    srand(time(0));
-    for (float t=0; t < 1; t+=0.01){
-        float theta = t*2*M_PI;
-        std::cout << "theta:" << theta << std::endl;
-        createFrame(M,points,sin(theta),cos(theta));
+    for (double i = -1; i <= 1; i+=1){
+        for (double j = -1; j <= 1; j+=1){
+            std::cout << "Creating Voroni Diagram" << "\n\tc0:" << i << "\n\tc1:" << j << std::endl;
+            char buf[12];
+            snprintf(buf, 12, "%d|%d.bmp", (int)i, (int) j); // puts string into buffer
+            clear(M);
+            voronoiDiagram(M,points,i,j);
+            save(buf,M);
+        }
     }
     return 0;
 }
