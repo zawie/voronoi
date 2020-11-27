@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/Adam/GitHub/psychedelic-c/main.cpp" "/Users/Adam/GitHub/psychedelic-c/cmake-build-debug/CMakeFiles/psychedelic_c.dir/main.cpp.o"
+  "/Users/Adam/GitHub/voronoi/main.cpp" "/Users/Adam/GitHub/voronoi/cmake-build-debug/CMakeFiles/psychedelic_c.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")
 

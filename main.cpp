@@ -127,6 +127,17 @@ void createPoints(int points[P][2]){
     }
 }
 
+int k = 0;
+void createFrame(double M[N][N], int points[P][2], double c0, double c1){
+    std::cout << "k:" << k << std::endl;
+    clear(M);
+    voroniDiagram(M,points,c0,c1);
+    char buf[12];
+    snprintf(buf, 12, "%d.bmp", k); // puts string into buffer
+    voroniDiagram(M,points,c0,c1);
+    save(buf,M);
+    k++;
+}
 
 int main() {
     //Create matrix
@@ -137,16 +148,26 @@ int main() {
     createPoints(points);
     //Set seed
     srand(time(0));
-    //
-    for (double i = -1; i <= 1; i+=1){
-        for (double j = -1; j <= 1; j+=1){
-            std::cout << "Creating Voroni Diagram" << "\n\tc0:" << i << "\n\tc1:" << j << std::endl;
-            char buf[12];
-            snprintf(buf, 12, "%d|%d.bmp", (int)i, (int) j); // puts string into buffer
-            clear(M);
-            voroniDiagram(M,points,i,j);
-            save(buf,M);
-        }
+    double step = 0.1;
+    //top
+    double c0 = -1;
+    for (double c1 = -1; c1 <= 1; c1+=step){
+        createFrame(M,points,c0,c1);
+    }
+    //right
+    double c1=1;
+    for (double c0 = -1; c0 <= 1; c0+=step){
+        createFrame(M,points,c0,c1);
+    }
+    //bottom
+    c0 = 1;
+    for (double c1 = 1; c1 >= -1; c1-=step){
+        createFrame(M,points,c0,c1);
+    }
+    //left
+    c1= -1;
+    for (double c0 = 1; c0 >= -1; c0-=step){
+        createFrame(M,points,c0,c1);
     }
     return 0;
 }
